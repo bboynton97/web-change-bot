@@ -76,8 +76,8 @@ def main():
 
             if current_state != last_state:
                 percent_change = compare_strings(current_state, last_state)
-                logger.info("Change detected on the website: {}% different".format(100-percent_change))
-                send_sms(client, TWILIO_PHONE_NUMBER, TO_PHONE_NUMBER, f"Change detected on {URL}: {100-percent_change}% different")
+                logger.info("Change detected on the website - {}% different".format(100-percent_change))
+                send_sms(client, TWILIO_PHONE_NUMBER, TO_PHONE_NUMBER, f"Change detected on {URL} - {100-percent_change}% different")
                 write_state(STATE_FILE, current_state)
                 last_state = current_state
             else:
