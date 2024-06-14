@@ -14,6 +14,10 @@ TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 TO_PHONE_NUMBER = os.getenv('TO_PHONE_NUMBER')
+TO_PHONE_NUMBERS = [TO_PHONE_NUMBER]
+
+if ',' in TO_PHONE_NUMBER:
+    TO_PHONE_NUMBERS = TO_PHONE_NUMBER.split(',')
 
 URL = os.getenv('URL_TO_MONITOR')
 FREQUENCY_IN_SECONDS = int(os.getenv('FREQUENCY_IN_SECONDS'))
@@ -77,7 +81,10 @@ def main():
             if current_state != last_state:
                 percent_change = compare_strings(current_state, last_state)
                 logger.info("Change detected on the website - {}% different".format(100-percent_change))
-                send_sms(client, TWILIO_PHONE_NUMBER, TO_PHONE_NUMBER, f"Change detected on {URL} - {100-percent_change}% different")
+
+                for number in TO_PHONE_NUMBERS:
+                    send_sms(client, TWILIO_PHONE_NUMBER, number, f"Change detected on {URL} - {100-percent_change}% different")
+
                 write_state(STATE_FILE, current_state)
                 last_state = current_state
             else:
