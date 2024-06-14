@@ -20,6 +20,9 @@ FREQUENCY_IN_SECONDS = int(os.getenv('FREQUENCY_IN_SECONDS'))
 
 # File to store the last known state of the website
 STATE_FILE = 'website_state.txt'
+if not os.path.isfile(STATE_FILE):
+    with open(STATE_FILE, 'w') as f:
+        pass
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
