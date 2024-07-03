@@ -36,7 +36,7 @@ This script monitors a specified website for changes and sends an SMS notificati
    TWILIO_AUTH_TOKEN=your_twilio_auth_token
    TWILIO_PHONE_NUMBER=your_twilio_phone_number
    TO_PHONE_NUMBER=destination_phone_number
-   URL_TO_MONITOR=the_website_url_to_monitor
+   URLS_TO_MONITOR=the_website_url_to_monitor_comma_diliminated
    FREQUENCY_IN_SECONDS=60  # or any other interval in seconds
    ```
 

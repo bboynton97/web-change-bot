@@ -6,6 +6,8 @@ import time
 from twilio.rest import Client
 import logging
 from fuzzywuzzy import fuzz
+from datetime import datetime
+import pytz
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -19,14 +21,8 @@ TO_PHONE_NUMBERS = [TO_PHONE_NUMBER]
 if ',' in TO_PHONE_NUMBER:
     TO_PHONE_NUMBERS = TO_PHONE_NUMBER.split(',')
 
-URL = os.getenv('URL_TO_MONITOR')
+URLS = os.getenv('URLS_TO_MONITOR').split(',')
 FREQUENCY_IN_SECONDS = int(os.getenv('FREQUENCY_IN_SECONDS'))
-
-# File to store the last known state of the website
-STATE_FILE = 'website_state.txt'
-if not os.path.isfile(STATE_FILE):
-    with open(STATE_FILE, 'w') as f:
-        pass
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -51,14 +47,14 @@ def get_website_content(url):
 
 def read_last_state(file):
     try:
-        with open(file, 'r') as f:
+        with open(f"{file}.txt", 'r') as f:
             return f.read()
     except FileNotFoundError:
         return ""
 
 
 def write_state(file, state):
-    with open(file, 'w') as f:
+    with open(f"{file}.txt", 'w') as f:
         f.write(state)
 
 
@@ -69,28 +65,50 @@ def send_sms(client, from_number, to_number, message):
         to=to_number
     )
 
+def clean_url(url: str):
+    url.replace('https://', '')
+    url.replace('/', '')
+    url.replace('.', '')
+    return url
+
+# Files to store the last known state of the website
+for url in URLS:
+    cleaned_url = clean_url(url)
+    STATE_FILE = f'{url}.txt'
+    if not os.path.isfile(STATE_FILE):
+        with open(STATE_FILE, 'w') as f:
+            pass
+
 
 def main():
+    counter = 0
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    last_state = read_last_state(STATE_FILE)
 
     while True:
         try:
-            current_state = get_website_content(URL)
+            for url in URLS:
+                last_state = read_last_state(clean_url(url))
+                current_state = get_website_content(url)
 
-            if current_state != last_state:
-                percent_change = compare_strings(current_state, last_state)
-                logger.info("Change detected on the website - {}% different".format(100-percent_change))
+                if current_state != last_state:
+                    percent_change = compare_strings(current_state, last_state)
+                    logger.info("Change detected on the website - {}% different".format(100 - percent_change))
 
-                for number in TO_PHONE_NUMBERS:
-                    send_sms(client, TWILIO_PHONE_NUMBER, number, f"Change detected on {URL} - {100-percent_change}% different")
+                    for number in TO_PHONE_NUMBERS:
+                        if counter == 0:
+                            send_sms(client, TWILIO_PHONE_NUMBER, number,
+                                     f"Web change bot reset. Tracking {cleaned_url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
+                        else:
+                            send_sms(client, TWILIO_PHONE_NUMBER, number,
+                                     f"Change detected on {url} - {100 - percent_change}% different")
 
-                write_state(STATE_FILE, current_state)
-                last_state = current_state
-            else:
-                # logger.info("No change detected")
-                pass
+                    write_state(clean_url(url), current_state)
+                else:
+                    logger.info(
+                        f"No change detected for {url} at {datetime.now(pytz.timezone('UTC')).astimezone(pytz.timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S %Z%z')}")
+                    pass
 
+            counter += 1
             time.sleep(FREQUENCY_IN_SECONDS)  # Check every 60 seconds
 
         except Exception as e:
