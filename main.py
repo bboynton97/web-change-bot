@@ -9,6 +9,7 @@ from fuzzywuzzy import fuzz
 from datetime import datetime
 import pytz
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Twilio credentials
@@ -65,11 +66,13 @@ def send_sms(client, from_number, to_number, message):
         to=to_number
     )
 
+
 def clean_url(url: str):
-    url.replace('https://', '')
-    url.replace('/', '')
-    url.replace('.', '')
+    url = url.replace('https://', '')
+    url = url.replace('/', '')
+    url = url.replace('.', '')
     return url
+
 
 # Files to store the last known state of the website
 for url in URLS:
