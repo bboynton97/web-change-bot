@@ -100,7 +100,7 @@ def main():
                     for number in TO_PHONE_NUMBERS:
                         if counter == 0:
                             send_sms(client, TWILIO_PHONE_NUMBER, number,
-                                     f"Web change bot reset. Tracking {cleaned_url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
+                                     f"Web change bot reset. Tracking {url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
                         else:
                             send_sms(client, TWILIO_PHONE_NUMBER, number,
                                      f"Change detected on {url} - {100 - percent_change}% different")
@@ -116,6 +116,9 @@ def main():
 
         except Exception as e:
             logger.error(f"An error occurred: {e}")
+            for number in TO_PHONE_NUMBERS:
+                send_sms(client, TWILIO_PHONE_NUMBER, number,
+                     "An unknown exception occurred while checking for website changes.")
             time.sleep(FREQUENCY_IN_SECONDS)
 
 
