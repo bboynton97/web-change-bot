@@ -77,7 +77,7 @@ def clean_url(url: str):
 # Files to store the last known state of the website
 for url in URLS:
     cleaned_url = clean_url(url)
-    STATE_FILE = f'{url}.txt'
+    STATE_FILE = f'{cleaned_url}.txt'
     if not os.path.isfile(STATE_FILE):
         with open(STATE_FILE, 'w') as f:
             pass
