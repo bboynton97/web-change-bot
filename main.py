@@ -72,14 +72,14 @@ def send_sms(client, from_number, to_number, message):
 
 def string_diff(str1, str2):
     differ = difflib.Differ()
-    diff = differ.compare(str1.splitlines(keepends=True), str2.splitlines(keepends=True))
+    diff = differ.compare(str2.splitlines(keepends=True), str1.splitlines(keepends=True))
 
     return ''.join(diff)
 
 
 def summarize_diff(diff):
     try:
-        messages = [{"role": "system", "content": "you are a text diff summarization tool. explain the important parts of the diff in a very short summary."},
+        messages = [{"role": "system", "content": "you are a text diff summarization tool. explain the important parts of the diff in a very short summary. only mention changes, not text that didn't change."},
                                {"role": "user", "content": diff}]
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",

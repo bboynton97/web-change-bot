@@ -4,6 +4,8 @@
 
 This script monitors a specified website for changes and sends an SMS notification via Twilio when a change is detected. It compares the current state of the website with the last known state and uses fuzzy string matching to determine the difference. The script continuously checks the website at a user-defined interval.
 
+The bot will also generate short change summarizations using OpenAI for easier understanding of changes in SMS notifications.
+
 ### Prerequisites
 
 - Python 3.x
@@ -12,6 +14,7 @@ This script monitors a specified website for changes and sends an SMS notificati
 - `twilio` library
 - `fuzzywuzzy` library
 - `python-dotenv` library
+- `openai` library
 
 ### Setup
 
@@ -20,7 +23,7 @@ This script monitors a specified website for changes and sends an SMS notificati
    Install the necessary Python libraries using pip:
 
    ```bash
-   pip install requests beautifulsoup4 twilio fuzzywuzzy python-dotenv
+   poetry install
    ```
 
 2. **Twilio Account**
@@ -35,9 +38,10 @@ This script monitors a specified website for changes and sends an SMS notificati
    TWILIO_ACCOUNT_SID=your_twilio_account_sid
    TWILIO_AUTH_TOKEN=your_twilio_auth_token
    TWILIO_PHONE_NUMBER=your_twilio_phone_number
-   TO_PHONE_NUMBER=destination_phone_number
+   TO_PHONE_NUMBER=destination_phone_number <> can be multiple numbers, comma seperated
    URLS_TO_MONITOR=the_website_url_to_monitor_comma_diliminated
    FREQUENCY_IN_SECONDS=60  # or any other interval in seconds
+   OPENAI_API_KEY=sk-... # if you want to use ai summarization of changes
    ```
 
 ### Usage
