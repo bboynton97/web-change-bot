@@ -9,6 +9,7 @@ from fuzzywuzzy import fuzz
 from datetime import datetime
 import pytz
 from dotenv import load_dotenv
+import difflib
 
 load_dotenv()
 
@@ -67,6 +68,14 @@ def send_sms(client, from_number, to_number, message):
     )
 
 
+def string_diff(str1, str2):
+    differ = difflib.Differ()
+
+    diff = differ.compare(str1.splitlines(keepends=True), str2.splitlines(keepends=True))
+
+    return ''.join(diff)
+
+
 def clean_url(url: str):
     url = url.replace('https://', '')
     url = url.replace('/', '')
@@ -96,6 +105,7 @@ def main():
                 if current_state != last_state:
                     percent_change = compare_strings(current_state, last_state)
                     logger.info("Change detected on the website - {}% different".format(100 - percent_change))
+                    print(f"Changes detected on website:\n {string_diff(current_state, last_state)}")
 
                     for number in TO_PHONE_NUMBERS:
                         if counter == 0:
