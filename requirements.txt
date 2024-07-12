@@ -1,5 +1,7 @@
-requests==2.26.0
-beautifulsoup4==4.10.0
-twilio==7.0.0
+requests~=2.31.0
+beautifulsoup4~=4.12.3
+twilio~=9.1.1
 fuzzywuzzy==0.18.0
-python-dotenv==0.19.2
+python-dotenv~=1.0.0
+pytz~=2023.3
+openai~=1.14.1

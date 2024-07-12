@@ -10,8 +10,10 @@ from datetime import datetime
 import pytz
 from dotenv import load_dotenv
 import difflib
+from openai import OpenAI
 
 load_dotenv()
+openai = OpenAI()
 
 # Twilio credentials
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
@@ -70,10 +72,26 @@ def send_sms(client, from_number, to_number, message):
 
 def string_diff(str1, str2):
     differ = difflib.Differ()
-
     diff = differ.compare(str1.splitlines(keepends=True), str2.splitlines(keepends=True))
 
     return ''.join(diff)
+
+
+def summarize_diff(diff):
+    try:
+        messages = [{"role": "system", "content": "you are a text diff summarization tool. explain the important parts of the diff in a very short summary."},
+                               {"role": "user", "content": diff}]
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.5,
+        )
+
+        return response.choices[0].message.content
+    except Exception as e:
+        print('Failed to get diff: ', e)
+        return ''
+
 
 
 def clean_url(url: str):
@@ -105,7 +123,10 @@ def main():
                 if current_state != last_state:
                     percent_change = compare_strings(current_state, last_state)
                     logger.info("Change detected on the website - {}% different".format(100 - percent_change))
-                    print(f"Changes detected on website:\n {string_diff(current_state, last_state)}")
+                    diff = string_diff(current_state, last_state)
+                    print(f"Changes detected on website:\n {diff}")
+
+                    diff_summary = summarize_diff(diff)
 
                     for number in TO_PHONE_NUMBERS:
                         if counter == 0:
@@ -113,7 +134,7 @@ def main():
                                      f"Web change bot reset. Tracking {url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
                         else:
                             send_sms(client, TWILIO_PHONE_NUMBER, number,
-                                     f"Change detected on {url} - {100 - percent_change}% different")
+                                     f"Change detected on {url} - {100 - percent_change}% different. \n Summary: {diff_summary}")
 
                     write_state(clean_url(url), current_state)
                 else:
