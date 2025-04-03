@@ -4,5 +4,4 @@ twilio~=9.1.1
 fuzzywuzzy==0.18.0
 python-dotenv~=1.0.0
 pytz~=2023.3
-openai~=1.70.3
-python-Levenshtein
+openai~=1.70.0
