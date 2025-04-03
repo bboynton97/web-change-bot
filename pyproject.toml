@@ -20,7 +20,7 @@ beautifulsoup4 = "^4.10.0"
 twilio = "^7.0.0"
 fuzzywuzzy = "^0.18.0"
 python-dotenv = "^0.19.2"
-openai = "1.14.1"
+openai = "1.70.0"
 
 
 
