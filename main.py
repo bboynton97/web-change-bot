@@ -79,10 +79,10 @@ def string_diff(str1, str2):
 
 def summarize_diff(diff):
     try:
-        messages = [{"role": "system", "content": "you are a text diff summarization tool. explain the important parts of the diff in a very short summary. only mention changes, not text that didn't change."},
+        messages = [{"role": "system", "content": "you are a text diff summarization tool. explain the important parts of the diff in a very short summary. only mention changes, not text that didn't change. this is a diff on an ecommerce website selling cute bodysuits."},
                                {"role": "user", "content": diff}]
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages,
             temperature=0.5,
         )
