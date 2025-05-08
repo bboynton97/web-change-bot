@@ -122,7 +122,8 @@ def main():
 
                 if current_state != last_state:
                     percent_change = compare_strings(current_state, last_state)
-                    logger.info("Change detected on the website - {}% different".format(100 - percent_change))
+                    percent_change = 100 - percent_change
+                    logger.info("Change detected on the website - {}% different".format(percent_change))
                     diff = string_diff(current_state, last_state)
                     print(f"Changes detected on website:\n {diff}")
 
@@ -135,7 +136,7 @@ def main():
                                         f"Web change bot reset. Tracking {url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
                             else:
                                 send_sms(client, TWILIO_PHONE_NUMBER, number,
-                                        f"Change detected on {url} - {100 - percent_change}% different. \n Summary: {diff_summary}")
+                                        f"Change detected on {url} - {percent_change}% different. \n Summary: {diff_summary}")
 
                     write_state(clean_url(url), current_state)
                 else:
