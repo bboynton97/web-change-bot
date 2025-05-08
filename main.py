@@ -126,15 +126,16 @@ def main():
                     diff = string_diff(current_state, last_state)
                     print(f"Changes detected on website:\n {diff}")
 
-                    diff_summary = summarize_diff(diff)
+                    if percent_change > 2:
+                        diff_summary = summarize_diff(diff)
 
-                    for number in TO_PHONE_NUMBERS:
-                        if counter == 0:
-                            send_sms(client, TWILIO_PHONE_NUMBER, number,
-                                     f"Web change bot reset. Tracking {url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
-                        else:
-                            send_sms(client, TWILIO_PHONE_NUMBER, number,
-                                     f"Change detected on {url} - {100 - percent_change}% different. \n Summary: {diff_summary}")
+                        for number in TO_PHONE_NUMBERS:
+                            if counter == 0:
+                                send_sms(client, TWILIO_PHONE_NUMBER, number,
+                                        f"Web change bot reset. Tracking {url} every {FREQUENCY_IN_SECONDS} seconds 💅🏻")
+                            else:
+                                send_sms(client, TWILIO_PHONE_NUMBER, number,
+                                        f"Change detected on {url} - {100 - percent_change}% different. \n Summary: {diff_summary}")
 
                     write_state(clean_url(url), current_state)
                 else:
